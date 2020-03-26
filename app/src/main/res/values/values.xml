@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="date_format_list">
+        <item>dd/MM/yyyy</item>
+        <item>dd/MM/yyyy HH:mm:ss</item>
+        <item>yyyy-MM-dd</item>
+        <item>yyyy-MM-dd HH:mm:ss</item>
+    </string-array>
+
+    <string name="main_app_pass" translatable="false">admin</string>
+    <string name="main_user_pass" translatable="false">admin</string>
+
+</resources>

@@ -1,0 +1,13 @@
+<resources>
+    <!-- connection error msg -->
+    <string name="connection_error_title">No Internet Connection</string>
+    <string name="connection_error_msg">unable to search online. Please, verify your connection and try again.</string>
+    <string name="connection_is_slow">Verify if your connection is slow. This may take some time…</string>
+    <string name="no_connection_title">No Internet Connection</string>
+    <string name="no_connection_msg">Unable to verify data online, please be sure to be connected to internet.</string>
+    <string name="no_connection_slow_msg">Verify your connection quality. This can take a while…</string>
+
+    <!-- permission messages -->
+    <string name="overlay_permission_msg">To App work properly you must grant permission to appear on other apps.</string>
+    <string name="btn_open_config">Open Config</string>
+</resources>

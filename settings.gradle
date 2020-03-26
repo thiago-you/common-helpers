@@ -1,0 +1,2 @@
+rootProject.name='CommonHelpers'
+include ':app'
