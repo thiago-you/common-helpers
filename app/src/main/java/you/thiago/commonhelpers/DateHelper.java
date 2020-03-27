@@ -10,6 +10,7 @@ import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class DateHelper {
@@ -236,13 +237,28 @@ public class DateHelper {
 
             /* validate age based on full date */
             if (
-                    (date.get(Calendar.MONTH) > today.get(Calendar.MONTH)) ||
-                            (date.get(Calendar.MONTH) == today.get(Calendar.MONTH) && date.get(Calendar.DATE) > today.get(Calendar.DATE))
+                (date.get(Calendar.MONTH) > today.get(Calendar.MONTH)) ||
+                (date.get(Calendar.MONTH) == today.get(Calendar.MONTH) && date.get(Calendar.DATE) > today.get(Calendar.DATE))
             ) {
                 year--;
             }
         }
 
         return year > 0 ? Integer.toString(year) : "0";
+    }
+
+    public static String millisecondsToTime(int milliseconds) {
+        final long minutes = TimeUnit.MILLISECONDS.toMinutes(milliseconds);
+        final long seconds = TimeUnit.MILLISECONDS.toSeconds(milliseconds) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliseconds));
+
+        return String.format(Locale.getDefault(), "%02d:%02d", milliseconds, seconds);
+    }
+
+    public static String addDaysToDate(int days) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DAY_OF_YEAR, days);
+
+        return DateHelper.dateToString(calendar.getTime(), "yyyy-MM-dd HH:mm:ss");
     }
 }
