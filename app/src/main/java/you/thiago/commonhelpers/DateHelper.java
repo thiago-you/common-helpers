@@ -11,17 +11,17 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-@SuppressWarnings({"unused"})
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class DateHelper {
 
     /**
      * Default date format list
      */
     private static final String[] DEFAULT_FORMAT_LIST = new String[] {
-        "dd/MM/yyyy HH:mm:ss",
-        "dd/MM/yyyy",
-        "yyyy-MM-dd HH:mm:ss",
-        "yyyy-MM-dd",
+            "dd/MM/yyyy HH:mm:ss",
+            "dd/MM/yyyy",
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd",
     };
 
     /**
@@ -46,7 +46,7 @@ public class DateHelper {
         String logMsg = "";
         Date date = null;
 
-        if (value != null && !value.equals("") && !value.equals("null")) {
+        if (value != null && !value.equals("") && !value.equals("null") && !value.equals("0000-00-00") &&  !value.equals("0000-00-00 00:00:00")) {
             for (String format : formatList) {
                 try {
                     SimpleDateFormat formatter = new SimpleDateFormat(format, Locale.getDefault());
@@ -167,6 +167,10 @@ public class DateHelper {
      * Calculate age between some date and now
      */
     public static String getAge(Date value) {
+        if (value == null) {
+            return null;
+        }
+
         int age;
 
         Calendar date = Calendar.getInstance();
@@ -233,7 +237,7 @@ public class DateHelper {
             /* validate age based on full date */
             if (
                     (date.get(Calendar.MONTH) > today.get(Calendar.MONTH)) ||
-                    (date.get(Calendar.MONTH) == today.get(Calendar.MONTH) && date.get(Calendar.DATE) > today.get(Calendar.DATE))
+                            (date.get(Calendar.MONTH) == today.get(Calendar.MONTH) && date.get(Calendar.DATE) > today.get(Calendar.DATE))
             ) {
                 year--;
             }
