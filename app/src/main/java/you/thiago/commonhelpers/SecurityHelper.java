@@ -14,9 +14,6 @@ public class SecurityHelper {
      */
     public static final String OPEN_SSL_PASSWORD_CRYPT_KEY = "COMM0NHELP3R";
 
-    /**
-     * Encrypt MD5 password
-     */
     public static String crypt(String password) {
         StringBuilder cryptPassword = new StringBuilder();
 
@@ -44,7 +41,7 @@ public class SecurityHelper {
         boolean isValidPass = false;
 
         if (password.equals(SecurityHelper.crypt(context.getString(R.string.main_app_pass))) ||
-                password.equals(SecurityHelper.crypt(context.getString(R.string.main_user_pass)))
+            password.equals(SecurityHelper.crypt(context.getString(R.string.main_user_pass)))
         ) {
             isValidPass = true;
         }

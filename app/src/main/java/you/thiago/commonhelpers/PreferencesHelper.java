@@ -3,6 +3,7 @@ package you.thiago.commonhelpers;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+@SuppressWarnings({"unused"})
 public class PreferencesHelper {
 
     /**
@@ -11,10 +12,16 @@ public class PreferencesHelper {
     private static SharedPreferences preferences;
 
     /**
+     * Preferences resource name (use package name as default)
+     * Add resource into values.xml to set a different preferences name
+     */
+    private static final String preferencesNameRes = "preferences_name";
+
+    /**
      * Get class instance inner class
      */
     private static class PreferencesHelperInstance {
-       private static final PreferencesHelper INSTANCE = new PreferencesHelper();
+        private static final PreferencesHelper INSTANCE = new PreferencesHelper();
     }
 
     private PreferencesHelper() {}
@@ -28,7 +35,13 @@ public class PreferencesHelper {
 
     private SharedPreferences getPreferences(Context context) {
         if (preferences == null) {
-            preferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
+            int resId = context.getResources().getIdentifier(preferencesNameRes, "string", context.getPackageName());
+
+            if (resId != 0) {
+                preferences = context.getSharedPreferences(context.getString(resId), Context.MODE_PRIVATE);
+            } else {
+                preferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
+            }
         }
 
         return preferences;
@@ -42,8 +55,19 @@ public class PreferencesHelper {
         return getInstance().getPreferences(context).edit();
     }
 
-    public static boolean contains(Context context, String key) {
-        return getInstance().getPreferences(context).contains(key);
+
+    public static boolean has(Context context, String... keys) {
+        if (keys == null || keys.length == 0) {
+            return false;
+        }
+
+        for (String key : keys) {
+            if (!getInstance().getPreferences(context).contains(key)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static String getString(Context context, String key) {
@@ -141,5 +165,19 @@ public class PreferencesHelper {
         if (preferences.contains(key)) {
             preferences.edit().remove(key).apply();
         }
+    }
+
+    public static boolean isNotEmptyInt(Context context, String... keys) {
+        if (keys == null || keys.length == 0) {
+            return false;
+        }
+
+        for (String key : keys) {
+            if (getInstance().getPreferences(context).getInt(key, 0) <= 0) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
