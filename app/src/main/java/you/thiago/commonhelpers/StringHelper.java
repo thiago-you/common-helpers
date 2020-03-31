@@ -13,7 +13,7 @@ import java.util.Locale;
 public class StringHelper {
 
     public static String capitalize(@Nullable String str) {
-        if (str == null) {
+        if (str == null || str.trim().isEmpty() || str.toLowerCase().equals("null")) {
             str = "";
         }
 

@@ -47,7 +47,7 @@ public class DateHelper {
         String logMsg = "";
         Date date = null;
 
-        if (value != null && !value.equals("") && !value.equals("null") && !value.equals("0000-00-00") &&  !value.equals("0000-00-00 00:00:00")) {
+        if (value != null && !value.trim().isEmpty() && !value.toLowerCase().equals("null") && !value.equals("0000-00-00") &&  !value.equals("0000-00-00 00:00:00")) {
             for (String format : formatList) {
                 try {
                     SimpleDateFormat formatter = new SimpleDateFormat(format, Locale.getDefault());
