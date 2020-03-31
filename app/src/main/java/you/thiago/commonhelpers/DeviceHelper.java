@@ -164,10 +164,8 @@ public class DeviceHelper {
     }
 
     public static boolean hasRequiredPermissions(Activity activity) {
-        /* get dynamic permission list from manifest */
         ArrayList<String> permissionList = DeviceHelper.getPermissionList(activity);
 
-        /* validate and get not allowed permissions */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return DeviceHelper.getNotAllowedList(activity, permissionList).size() == 0;
         }
@@ -176,16 +174,8 @@ public class DeviceHelper {
     }
 
     public static boolean requestPermissions(Activity activity) {
-        boolean permissionStatus = DeviceHelper.requestOverlayPermissions(activity);
-
-        /* get dynamic permission list from manifest */
         ArrayList<String> permissionList = DeviceHelper.getPermissionList(activity);
-
-        if (permissionStatus && !DeviceHelper.requestPermissions(activity, permissionList)) {
-            permissionStatus = false;
-        }
-
-        return permissionStatus;
+        return DeviceHelper.requestPermissions(activity, permissionList);
     }
 
     public static boolean requestPermissions(Activity activity, ArrayList<String> permissionList) {
@@ -197,15 +187,11 @@ public class DeviceHelper {
         boolean permissionStatus = true;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            /* validate and get not allowed permissions */
             permissionsToRequest = DeviceHelper.getNotAllowedList(activity, permissionList);
 
-            /* request permission list */
             if (permissionsToRequest.size() > 0) {
-                /* set flag false */
                 permissionStatus = false;
 
-                /* request permission list */
                 ActivityCompat.requestPermissions(activity, permissionsToRequest.toArray(new String[0]), DeviceHelper.PERMISSION_REQUEST_CODE);
             }
         }
@@ -213,10 +199,12 @@ public class DeviceHelper {
         return permissionStatus;
     }
 
+    /**
+     * Show overlay permission request dialog
+     */
     public static boolean requestOverlayPermissions(final Activity activity) {
         boolean permissionStatus = true;
 
-        /* show overlay permission request */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(activity)) {
                 permissionStatus = false;
@@ -275,6 +263,37 @@ public class DeviceHelper {
         };
 
         return DeviceHelper.requestPermissions(activity, permissionList);
+    }
+
+    private static ArrayList<String> getNotAllowedList(Context context, ArrayList<String> permissionList) {
+        return DeviceHelper.getNotAllowedList(context, permissionList.toArray(new String[0]));
+    }
+
+    private static ArrayList<String> getNotAllowedList(Context context, String[] permissionList) {
+        ArrayList<String> requestList = new ArrayList<>();
+
+        if (permissionList.length > 0) {
+            for (String permission : permissionList) {
+                if (!checkPermission(context, permission)) {
+                    /* don't add system alert window */
+                    if (permission.equals(Manifest.permission.SYSTEM_ALERT_WINDOW) || permission.equals("android.permission.ACTION_MANAGE_OVERLAY_PERMISSION")) {
+                        continue;
+                    }
+                    /* add foreground permission only to API 28 and above (android 9) */
+                    if (permission.equals(Manifest.permission.FOREGROUND_SERVICE) && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                        continue;
+                    }
+
+                    requestList.add(permission);
+                }
+            }
+        }
+
+        return requestList;
+    }
+
+    private static boolean checkPermission(Context context, String permission) {
+        return ActivityCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
     public static Location getDeviceLocation(Activity activity) {
@@ -376,36 +395,6 @@ public class DeviceHelper {
         return phoneNumber;
     }
 
-    private static ArrayList<String> getNotAllowedList(Context context, ArrayList<String> permissionList) {
-        return DeviceHelper.getNotAllowedList(context, permissionList.toArray(new String[0]));
-    }
-
-    private static ArrayList<String> getNotAllowedList(Context context, String[] permissionList) {
-        ArrayList<String> requestList = new ArrayList<>();
-
-        if (permissionList.length > 0) {
-            for (String permission : permissionList) {
-                if (!checkPermission(context, permission)) {
-                    /* add general permission if not system alert window */
-                    if (!permission.equals(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
-                        /* add foreground permission only to API 28 and above (android 9) */
-                        if (permission.equals(Manifest.permission.FOREGROUND_SERVICE) && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-                            continue;
-                        }
-
-                        requestList.add(permission);
-                    }
-                }
-            }
-        }
-
-        return requestList;
-    }
-
-    private static boolean checkPermission(Context context, String permission) {
-        return ActivityCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
-    }
-
     public static boolean isAppRunning(final Context context) {
         final ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 
@@ -432,7 +421,6 @@ public class DeviceHelper {
     }
 
     public static void hideKeyboard(Activity activity) {
-        /* hide keyboard */
         InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (inputManager != null) {
             inputManager.hideSoftInputFromWindow((null == activity.getCurrentFocus())
