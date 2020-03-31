@@ -124,7 +124,7 @@ public class JsonHelper extends JSONObject {
     @NonNull
     public JsonHelper put(@NonNull String name, String value, String defaultValue) {
         try {
-            if (!Validator.isEmpty(value)) {
+            if (Validator.isNotEmpty(value)) {
                 super.put(name, value);
             } else {
                 if (defaultValue == null) {
@@ -303,6 +303,19 @@ public class JsonHelper extends JSONObject {
     }
 
     @NonNull
+    public JsonHelper putNonNull(@NonNull String name, int value, int nullValue) {
+        try {
+            if (value > nullValue) {
+                super.put(name, value);
+            }
+        } catch (JSONException e) {
+            Log.e(getClass().getSimpleName(), e.getMessage(), e);
+        }
+
+        return this;
+    }
+
+    @NonNull
     public JsonHelper putNonNull(@NonNull String name, double value) {
         try {
             if (value > 0) {
@@ -318,7 +331,7 @@ public class JsonHelper extends JSONObject {
     @NonNull
     public JsonHelper putNonNull(@NonNull String name, String value) {
         try {
-            if (!Validator.isEmpty(value)) {
+            if (Validator.isNotEmpty(value)) {
                 super.put(name, value);
             }
         } catch (JSONException e) {
@@ -331,7 +344,7 @@ public class JsonHelper extends JSONObject {
     @NonNull
     public JsonHelper putStringNull(@NonNull String name, String value) {
         try {
-            if (!Validator.isEmpty(value)) {
+            if (Validator.isNotEmpty(value)) {
                 super.put(name, value);
             } else {
                 super.put(name, NULL);

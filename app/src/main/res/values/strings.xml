@@ -1,4 +1,7 @@
 <resources>
+    <!-- Common Strings -->
+    <string name="app_name">App</string>
+
     <!-- connection error msg -->
     <string name="connection_error_title">No Internet Connection</string>
     <string name="connection_error_msg">unable to search online. Please, verify your connection and try again.</string>

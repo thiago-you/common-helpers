@@ -9,7 +9,17 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
+import java.io.File;
+import java.util.Objects;
+
+@SuppressWarnings({"unused"})
 public class VideoHelper {
+
+    public static String getStorageDir(Context context) {
+        return Objects.requireNonNull(context.getExternalFilesDir(Environment.DIRECTORY_MOVIES)).getAbsolutePath()
+                + File.separator
+                + context.getString(R.string.app_name);
+    }
 
     public static String getPath(final Context context, final Uri uri) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, uri)) {
@@ -19,11 +29,11 @@ public class VideoHelper {
                 final String type = split[0];
 
                 if ("primary".equalsIgnoreCase(type)) {
-                    return Environment.getExternalStorageDirectory() + "/" + split[1];
+                    return context.getExternalFilesDir(Environment.DIRECTORY_MOVIES) + "/" + split[1];
                 }
             } else if (isDownloadsDocument(uri)) {
                 final String id = DocumentsContract.getDocumentId(uri);
-                final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+                final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.parseLong(id));
 
                 return getDataColumn(context, contentUri, null, null);
             } else if (isMediaDocument(uri)) {
