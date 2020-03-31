@@ -2,13 +2,13 @@
 Common helpers to Java/Android Applications.
 
 ### Helpers
-    - ImageHelper
-    - InputHelper
-    - DeviceHelper
-    - JsonHelper
     - DateHelper
+    - DeviceHelper
+    - InputHelper
+    - JsonHelper
     - PreferencesHelper
     - SecurityHelper
+    - StringHelper
     - VideoHelper
     - Validator
 
