@@ -89,6 +89,19 @@ public class DeviceHelper {
         return isConnected;
     }
 
+    public static boolean isGpsOnline(Context context) {
+        boolean status = false;
+
+        LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        if (manager != null) {
+            if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER) || manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                status = true;
+            }
+        }
+
+        return status;
+    }
+
     public static boolean isConnectionSlow(Context context) {
         int netSubType = 0;
 
