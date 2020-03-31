@@ -4,10 +4,12 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -19,7 +21,9 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.Settings;
+import android.speech.RecognizerIntent;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
@@ -34,6 +38,8 @@ import androidx.core.app.ActivityCompat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 import you.thiago.simplealert.SimpleAlert;
 
@@ -207,6 +213,34 @@ public class DeviceHelper {
         return permissionStatus;
     }
 
+    public static boolean requestOverlayPermissions(final Activity activity) {
+        boolean permissionStatus = true;
+
+        /* show overlay permission request */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(activity)) {
+                permissionStatus = false;
+
+                new SimpleAlert(activity, SimpleAlert.STYLE_SYSTEM)
+                        .setType(SimpleAlert.INFO)
+                        .setMessage(activity.getString(R.string.overlay_permission_msg))
+                        .setBtnConfirmTitle(activity.getString(R.string.btn_open_config))
+                        .setConfirmClickListener(new SimpleAlert.OnSimpleAlertClickListener() {
+                            @Override
+                            public void onClick(SimpleAlert alertDialog) {
+                                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + activity.getPackageName()));
+                                activity.startActivityForResult(intent, PERMISSION_REQUEST_CODE);
+
+                                alertDialog.dismiss();
+                            }
+                        })
+                        .show();
+            }
+        }
+
+        return permissionStatus;
+    }
+
     public static boolean checkCameraPermissions(Activity activity) {
         String[] permissionList = new String[] {
                 Manifest.permission.CAMERA,
@@ -241,34 +275,6 @@ public class DeviceHelper {
         };
 
         return DeviceHelper.requestPermissions(activity, permissionList);
-    }
-
-    public static boolean requestOverlayPermissions(final Activity activity) {
-        boolean permissionStatus = true;
-
-        /* show overlay permission request */
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(activity)) {
-                permissionStatus = false;
-
-                new SimpleAlert(activity, SimpleAlert.STYLE_SYSTEM)
-                        .setType(SimpleAlert.INFO)
-                        .setMessage(activity.getString(R.string.overlay_permission_msg))
-                        .setBtnConfirmTitle(activity.getString(R.string.btn_open_config))
-                        .setConfirmClickListener(new SimpleAlert.OnSimpleAlertClickListener() {
-                            @Override
-                            public void onClick(SimpleAlert alertDialog) {
-                                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + activity.getPackageName()));
-                                activity.startActivityForResult(intent, PERMISSION_REQUEST_CODE);
-
-                                alertDialog.dismiss();
-                            }
-                        })
-                        .show();
-            }
-        }
-
-        return permissionStatus;
     }
 
     public static Location getDeviceLocation(Activity activity) {
@@ -446,5 +452,45 @@ public class DeviceHelper {
 
             activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         }
+    }
+
+    public static boolean hasIntent(Context context, Intent intent) {
+        List<ResolveInfo> info = context.getPackageManager().queryIntentActivities(intent, 0);
+        return info.size() != 0;
+    }
+
+    public static View.OnLongClickListener startRecognizeSpeechListener(final Activity activity, final String text, final int requestCode) {
+        return new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                DeviceHelper.startRecognizeSpeech(activity, text, requestCode);
+                return true;
+            }
+        };
+    }
+
+    public static void startRecognizeSpeech(Activity activity, String text, int requestCode) {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, activity.getPackageName());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, text);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
+
+        if (hasIntent(activity, intent)) {
+            activity.startActivityForResult(intent, requestCode);
+        }
+    }
+
+    public static void downloadFile(Context context, Uri uri, String filename) {
+        /* create and configure request */
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setTitle(filename);
+
+        /* get manager and start download */
+        DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        Objects.requireNonNull(manager).enqueue(request);
     }
 }
