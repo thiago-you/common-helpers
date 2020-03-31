@@ -55,7 +55,6 @@ public class PreferencesHelper {
         return getInstance().getPreferences(context).edit();
     }
 
-
     public static boolean has(Context context, String... keys) {
         if (keys == null || keys.length == 0) {
             return false;
@@ -68,6 +67,20 @@ public class PreferencesHelper {
         }
 
         return true;
+    }
+
+    public static boolean notHas(Context context, String... keys) {
+        if (keys == null || keys.length == 0) {
+            return true;
+        }
+
+        for (String key : keys) {
+            if (key == null || !getInstance().getPreferences(context).contains(key)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static String getString(Context context, String key) {
