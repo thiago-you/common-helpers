@@ -312,63 +312,25 @@ public class DeviceHelper {
     }
 
     @SuppressLint({"HardwareIds"})
-    public static String getDeviceImei(Activity activity) {
-        String imei = "";
-
-        try {
-            TelephonyManager manager = (TelephonyManager) activity.getSystemService(Context.TELEPHONY_SERVICE);
-
-            if (manager != null) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    if (DeviceHelper.checkReadPhonePermission(activity)) {
-                        imei = manager.getImei();
-                    }
-                } else {
-                    if (DeviceHelper.checkReadPhonePermission(activity)) {
-                        imei = manager.getDeviceId();
-                    }
-                }
-
-                /* optional get IMEI method */
-                if (imei.length() == 0) {
-                    imei = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                }
-            }
-        } catch (Exception e) {
-            Log.e(DeviceHelper.class.getSimpleName(), e.getMessage(), e);
-        }
-
-        return imei;
-    }
-
-    @SuppressLint({"HardwareIds"})
     public static String getDeviceImei(Context context) {
         String imei = "";
 
         try {
-            Activity activity = (Activity) context;
-            imei = DeviceHelper.getDeviceImei(activity);
-        } catch (Exception e) {
-            Log.i(DeviceHelper.class.getSimpleName(), e.getMessage(), e);
-        }
+            TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 
-        if (imei.equals("")) {
-            try {
-                TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-
-                if (manager != null) {
+            if (manager != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    if (checkPermission(context, Manifest.permission.READ_PHONE_STATE)) {
+                        imei = manager.getImei();
+                    }
+                } else {
                     if (checkPermission(context, Manifest.permission.READ_PHONE_STATE)) {
                         imei = manager.getDeviceId();
                     }
-
-                    /* optional get IMEI method */
-                    if (imei.equals("")) {
-                        imei = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-                    }
                 }
-            } catch (Exception e) {
-                Log.e(DeviceHelper.class.getSimpleName(), e.getMessage(), e);
             }
+        } catch (Exception e) {
+            Log.e(DeviceHelper.class.getSimpleName(), e.getMessage(), e);
         }
 
         return imei;
