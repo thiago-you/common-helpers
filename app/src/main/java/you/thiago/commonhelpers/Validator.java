@@ -14,7 +14,7 @@ import java.util.Objects;
 public class Validator {
 
     public static boolean isEmpty(String value) {
-        return value == null || value.equals("null") || value.equals("") || value.trim().length() == 0;
+        return value == null || value.equals("null") || value.trim().equals("") || value.length() == 0;
     }
 
     public static boolean isEmpty(Editable editable) {
@@ -96,7 +96,7 @@ public class Validator {
     public static boolean validateLength(String value, int minLength, int maxLength) {
         boolean isValid = true;
 
-        if (value != null && !value.equals("") && value.length() > 0) {
+        if (value != null && !value.trim().equals("") && value.length() > 0) {
             if (minLength > 0 && value.length() < minLength) {
                 isValid = false;
             }
