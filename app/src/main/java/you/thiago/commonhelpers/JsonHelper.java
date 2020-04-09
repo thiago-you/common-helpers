@@ -1,5 +1,6 @@
 package you.thiago.commonhelpers;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+
+import you.thiago.imagehelper.ImageComponent;
 
 @SuppressWarnings("unused UnusedReturnValue WeakerAcess")
 public class JsonHelper extends JSONObject {
@@ -155,21 +158,20 @@ public class JsonHelper extends JSONObject {
         return this;
     }
 
-//    TODO
-//    @NonNull
-//    public JsonHelper put(@NonNull String name, Bitmap value) {
-//        try {
-//            if (value != null) {
-//                super.put(name, ImageComponent.getBitmapBase64(value));
-//            } else {
-//                super.put(name, "");
-//            }
-//        } catch (JSONException e) {
-//            Log.e(getClass().getSimpleName(), e.getMessage(), e);
-//        }
-//
-//        return this;
-//    }
+    @NonNull
+    public JsonHelper put(@NonNull String name, Bitmap value) {
+        try {
+            if (value != null) {
+                super.put(name, ImageComponent.getBitmapBase64(value));
+            } else {
+                super.put(name, "");
+            }
+        } catch (JSONException e) {
+            Log.e(getClass().getSimpleName(), e.getMessage(), e);
+        }
+
+        return this;
+    }
 
     @NonNull
     public JsonHelper put(@NonNull String name, Date value) {
@@ -412,33 +414,31 @@ public class JsonHelper extends JSONObject {
         return this;
     }
 
-//    TODO
-//    @NonNull
-//    public JsonHelper putNonNull(@NonNull String name, Bitmap value) {
-//        try {
-//            if (value != null) {
-//                super.put(name, ImageComponent.getBitmapBase64(value));
-//            }
-//        } catch (JSONException e) {
-//            Log.e(getClass().getSimpleName(), e.getMessage(), e);
-//        }
-//
-//        return this;
-//    }
+    @NonNull
+    public JsonHelper putNonNull(@NonNull String name, Bitmap value) {
+        try {
+            if (value != null) {
+                super.put(name, ImageComponent.getBitmapBase64(value));
+            }
+        } catch (JSONException e) {
+            Log.e(getClass().getSimpleName(), e.getMessage(), e);
+        }
 
-//    TODO
-//    @NonNull
-//    public JsonHelper putNonNull(@NonNull String name, Bitmap value, int imgWidth, int imgHeight, int imgQuality) {
-//        try {
-//            if (value != null) {
-//                super.put(name, ImageComponent.getBitmapBase64(value, imgWidth, imgHeight, imgQuality));
-//            }
-//        } catch (JSONException e) {
-//            Log.e(getClass().getSimpleName(), e.getMessage(), e);
-//        }
-//
-//        return this;
-//    }
+        return this;
+    }
+
+    @NonNull
+    public JsonHelper putNonNull(@NonNull String name, Bitmap value, int imgWidth, int imgHeight, int imgQuality) {
+        try {
+            if (value != null) {
+                super.put(name, ImageComponent.getBitmapBase64(value, imgWidth, imgHeight, imgQuality));
+            }
+        } catch (JSONException e) {
+            Log.e(getClass().getSimpleName(), e.getMessage(), e);
+        }
+
+        return this;
+    }
 
     @NonNull
     public JsonHelper putNonNull(@NonNull String name, JSONArray value) {

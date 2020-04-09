@@ -33,4 +33,5 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.0-alpha05'
 
     implementation 'com.github.thiago-you:simple-alert:1.0.1'
+    implementation 'com.github.thiago-you:image-helper:1.0.0'
 }
