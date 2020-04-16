@@ -1,6 +1,7 @@
 package you.thiago.commonhelpers;
 
 import android.app.Activity;
+import android.os.Build;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -11,6 +12,8 @@ import android.widget.EditText;
 import androidx.appcompat.widget.AppCompatEditText;
 
 import com.google.android.material.textfield.TextInputLayout;
+
+import java.util.Locale;
 
 @SuppressWarnings("unused WeakerAccess")
 public class InputHelper {
@@ -680,9 +683,13 @@ public class InputHelper {
 
     private InputFilter[] decimalWatcher(final EditText editText, final int beforeDecimal, final int afterDecimal) {
         editText.setFilters(new InputFilter[] {});
+        return new InputFilter[] { getDigitsKeyListener(editText, beforeDecimal, afterDecimal) };
+    }
 
-        return new InputFilter[] {
-            new DigitsKeyListener(Boolean.FALSE, Boolean.TRUE) {
+    @SuppressWarnings("deprecation")
+    private DigitsKeyListener getDigitsKeyListener(final EditText editText, final int beforeDecimal, final int afterDecimal) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return new DigitsKeyListener(Locale.getDefault(), Boolean.FALSE, Boolean.TRUE) {
                 @Override
                 public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
                     if (editText.hasFocus()) {
@@ -693,6 +700,7 @@ public class InputHelper {
                             if (text.contains(".")) {
                                 return "";
                             }
+
                             temp += ".";
                         } else {
                             temp += source.toString().replace(text, "");
@@ -705,7 +713,7 @@ public class InputHelper {
                                 return "";
                             }
                         } else {
-                            int dotPosition;
+                            int dotPosition ;
                             int cursorPosition = editText.getSelectionStart();
                             if (text.contains(".")) {
                                 dotPosition = text.indexOf(".");
@@ -742,7 +750,70 @@ public class InputHelper {
 
                     return null;
                 }
-            }
-        };
+            };
+        } else {
+            return new DigitsKeyListener(Boolean.FALSE, Boolean.TRUE) {
+                @Override
+                public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                    if (editText.hasFocus()) {
+                        String text = editText.getText().toString();
+                        String temp = text;
+
+                        if (source.toString().contains(".")) {
+                            if (text.contains(".")) {
+                                return "";
+                            }
+
+                            temp += ".";
+                        } else {
+                            temp += source.toString().replace(text, "");
+                        }
+
+                        if (temp.equals(".")) {
+                            return "0.";
+                        } else if (!temp.contains(".")) {
+                            if (temp.length() > beforeDecimal) {
+                                return "";
+                            }
+                        } else {
+                            int dotPosition ;
+                            int cursorPosition = editText.getSelectionStart();
+                            if (text.contains(".")) {
+                                dotPosition = text.indexOf(".");
+                            } else {
+                                dotPosition = temp.indexOf(".");
+                            }
+
+                            if (cursorPosition <= dotPosition) {
+                                String beforeDot = text.substring(0, dotPosition);
+
+                                if (beforeDot.length() < beforeDecimal) {
+                                    if (text.contains(".")) {
+                                        return temp;
+                                    } else {
+                                        return source;
+                                    }
+                                } else {
+                                    if (source.toString().contains(".")) {
+                                        return source;
+                                    } else {
+                                        return "";
+                                    }
+                                }
+                            } else {
+                                temp = temp.substring(temp.indexOf(".") + 1);
+                                if (temp.length() > afterDecimal) {
+                                    return "";
+                                }
+                            }
+                        }
+
+                        return super.filter(source, start, end, dest, dstart, dend);
+                    }
+
+                    return null;
+                }
+            };
+        }
     }
 }
