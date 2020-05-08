@@ -16,13 +16,24 @@ import java.util.concurrent.TimeUnit;
 public class DateHelper {
 
     /**
+     * Default date formats
+     */
+    public static final String DATE = "dd/MM/yyy";
+    public static final String DATETIME = "dd/MM/yyy HH:mm:ss";
+    public static final String ISO_DATE = "yyyy-MM-dd";
+    public static final String ISO_DATETIME = "yyyy-MM-dd HH:mm:ss";
+    public static final String HOUR_MINUTE = "HH:mm";
+    public static final String HOUR_MINUTE_SECOND = "HH:mm:ss";
+    public static final String MOUNT_HOUR_SECOND = "dd/MM HH:mm";
+
+    /**
      * Default date format list
      */
     private static final String[] DEFAULT_FORMAT_LIST = new String[] {
-            "dd/MM/yyyy HH:mm:ss",
-            "dd/MM/yyyy",
             "yyyy-MM-dd HH:mm:ss",
             "yyyy-MM-dd",
+            "dd/MM/yyyy HH:mm:ss",
+            "dd/MM/yyyy",
     };
 
     /**
@@ -53,7 +64,6 @@ public class DateHelper {
                     SimpleDateFormat formatter = new SimpleDateFormat(format, Locale.getDefault());
                     date = formatter.parse(value);
 
-                    /* clear log MSG */
                     logMsg = "";
                     break;
                 } catch (Exception e) {
@@ -62,7 +72,6 @@ public class DateHelper {
                 }
             }
 
-            /* set log */
             if (logMsg != null && !logMsg.equals("")) {
                 Log.e(DateHelper.class.getSimpleName(), logMsg);
             }
@@ -114,7 +123,6 @@ public class DateHelper {
                     SimpleDateFormat formatter = new SimpleDateFormat(format, Locale.getDefault());
                     stringDate = formatter.format(value);
 
-                    /* clear log MSG */
                     logMsg = "";
                     break;
                 } catch (Exception e) {
@@ -123,7 +131,6 @@ public class DateHelper {
                 }
             }
 
-            /* set log */
             if (logMsg != null && !logMsg.equals("")) {
                 Log.e(DateHelper.class.getSimpleName(), logMsg);
             }
@@ -147,6 +154,28 @@ public class DateHelper {
         }
 
         return dateToString;
+    }
+
+    /**
+     * Format date string into another date string format
+     */
+    public static String format(String value, String pattern) {
+        try {
+            Date date = DateHelper.stringToDate(value);
+
+            if (date == null) {
+                SimpleDateFormat formatter = new SimpleDateFormat(pattern, Locale.getDefault());
+                date = formatter.parse(value);
+            }
+
+            if (date != null) {
+                value = DateHelper.dateToString(date, pattern);
+            }
+        } catch (Exception e) {
+            Log.e(DateHelper.class.getSimpleName(), e.getMessage(), e);
+        }
+
+        return value;
     }
 
     /**
