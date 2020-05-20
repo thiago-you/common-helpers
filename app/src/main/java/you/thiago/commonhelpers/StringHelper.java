@@ -1,11 +1,17 @@
 package you.thiago.commonhelpers;
 
 import android.content.Context;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Log;
+import android.widget.EditText;
 
 import androidx.annotation.Nullable;
 import androidx.core.text.HtmlCompat;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -145,5 +151,25 @@ public class StringHelper {
         s = s.replaceAll("`", "");
 
         return s;
+    }
+
+    public static void setRequiredIndicator(EditText editText, @Nullable TextInputLayout parent) {
+        if (editText.getText() == null || editText.getText().toString().isEmpty()) {
+            if (editText.getHint() != null) {
+                editText.setHint(StringHelper.setRequiredHintColor(editText.getContext(), editText.getHint().toString()));
+            } else {
+                if (parent != null && parent.getHint() != null) {
+                    parent.setHint(StringHelper.setRequiredHintColor(parent.getContext(), parent.getHint().toString()));
+                }
+            }
+        }
+    }
+
+    private static Spannable setRequiredHintColor(Context context, String hint) {
+        if (!hint.contains("*")) {
+            hint = TextUtils.concat(hint, " *").toString();
+        }
+
+        return new SpannableString(hint);
     }
 }
